@@ -508,6 +508,28 @@ def main():
         sc_test = supercharger_stress_test(df)
     
     # === SIDEBAR CONTROLS ===
+    st.sidebar.markdown("""
+        <div style='text-align: center; padding: 20px 10px;'>
+            <svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+                <!-- Tesla Logo -->
+                <!-- T shape -->
+                <path d="M 100 15 L 100 65 M 80 15 L 120 15" 
+                      stroke="#CC0000" 
+                      stroke-width="8" 
+                      stroke-linecap="round"
+                      fill="none"/>
+                <!-- Text -->
+                <text x="100" y="75" 
+                      font-family="Arial, sans-serif" 
+                      font-size="16" 
+                      font-weight="bold" 
+                      fill="#CC0000" 
+                      text-anchor="middle"
+                      letter-spacing="4">TESLA</text>
+            </svg>
+        </div>
+    """, unsafe_allow_html=True)
+    
     st.sidebar.title("🎛️ Fleet Controls")
     st.sidebar.markdown("---")
     
