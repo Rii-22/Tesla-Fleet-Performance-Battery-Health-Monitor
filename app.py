@@ -56,19 +56,25 @@ st.markdown("""
     /* Metrics - Silver/White */
     [data-testid="stMetricValue"] {
         color: #FFFFFF;
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         font-weight: 700;
     }
     
+    /* FIX: Shrink metric label font so long labels don't truncate */
     [data-testid="stMetricLabel"] {
         color: #C0C0C0;
-        font-size: 0.95rem;
+        font-size: 0.78rem;
         text-transform: uppercase;
-        letter-spacing: 2px;
+        letter-spacing: 1px;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        line-height: 1.3;
     }
     
     [data-testid="stMetricDelta"] {
         color: #CC0000;
+        font-size: 0.82rem;
     }
     
     /* Buttons - Tesla Red */
@@ -284,9 +290,6 @@ def generate_tesla_telemetry(n_sessions=7000, seed=42):
         n_sessions,
         p=[0.30, 0.60, 0.10]
     )
-    
-    # Calculate Supercharger dependency (% of sessions)
-    # This will be calculated per vehicle later
     
     # === EPA RATED RANGE (for efficiency calculation) ===
     epa_ranges = {
@@ -560,48 +563,48 @@ def main():
     st.sidebar.markdown("---")
     st.sidebar.info(f"📊 **Sessions:** {len(filtered_df):,} / {len(df):,}")
     
-    # === FLEET COMMANDER KPI TILES ===
+    # ============================================================
+    # FIX: Use shorter, cleaner metric labels so they don't
+    # truncate in the KPI card header. The full context is still
+    # conveyed through the value and delta text beneath each card.
+    # ============================================================
     st.subheader("📊 Fleet Commander Dashboard")
     
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
         avg_fleet_health = filtered_df['SOH_Percentage'].mean()
-        
         st.metric(
-            "Average Fleet Health",
-            f"{avg_fleet_health:.2f}%",
-            delta=f"{avg_fleet_health - 95:.2f}% vs target",
+            label="Avg Fleet Health (SOH)",          # was "Average Fleet Health" → truncated
+            value=f"{avg_fleet_health:.2f}%",
+            delta=f"{avg_fleet_health - 95:.2f}% vs 95% target",
             delta_color="normal"
         )
     
     with col2:
         avg_efficiency = filtered_df['Avg_Watt_Hours_per_KM'].mean()
-        
         st.metric(
-            "Avg Efficiency",
-            f"{avg_efficiency:.1f} Wh/km",
-            delta=f"{165 - avg_efficiency:.1f} vs baseline",
+            label="Avg Consumption (Wh/km)",         # was "Avg Efficiency" → ambiguous + delta was confusing
+            value=f"{avg_efficiency:.1f} Wh/km",
+            delta=f"{165 - avg_efficiency:+.1f} vs 165 baseline",
             delta_color="inverse"
         )
     
     with col3:
         supercharger_sessions = len(filtered_df[filtered_df['Charger_Type'] == 'Supercharger'])
         sc_dependency = (supercharger_sessions / len(filtered_df) * 100) if len(filtered_df) > 0 else 0
-        
         st.metric(
-            "Supercharger Dependency",
-            f"{sc_dependency:.1f}%",
+            label="Supercharger Usage",              # was "Supercharger Dependency" → truncated
+            value=f"{sc_dependency:.1f}%",
             delta=f"{supercharger_sessions:,} sessions"
         )
     
     with col4:
         avg_efficiency_score = filtered_df['Efficiency_Score'].mean()
-        
         st.metric(
-            "Real-World Efficiency",
-            f"{avg_efficiency_score:.1f}%",
-            delta=f"{avg_efficiency_score - 100:.1f}% vs EPA",
+            label="Real-World vs EPA Range",         # was "Real-World Efficiency" → truncated
+            value=f"{avg_efficiency_score:.1f}%",
+            delta=f"{avg_efficiency_score - 100:.1f}% vs EPA rated",
             delta_color="normal"
         )
     
